@@ -1,0 +1,50 @@
+package routes
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/Efojensen/Idempotency-Gateway/types"
+	"github.com/Efojensen/Idempotency-Gateway/utils"
+)
+
+func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
+	var paymentBody types.PaymentRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&paymentBody); err != nil {
+		utils.WriteErrorResponse(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if paymentBody.Amount == 0 || paymentBody.Currency == "" {
+		utils.WriteErrorResponse(w, http.StatusBadRequest, errors.New("missing amount or currency"))
+		return
+	}
+
+	key := r.Context().Value("idempotencyKey").(string)
+
+	cachedResponse, exists := p.cache[key]
+
+	if exists {
+		if cachedResponse.Currency == paymentBody.Currency && cachedResponse.Amount == paymentBody.Amount {
+			utils.WriteResponse(w, p.cache[key].StatusCode, p.cache[key])
+			return
+		} else {
+			utils.WriteErrorResponse(w, http.StatusUnprocessableEntity,
+				errors.New("idempotency key already used for a different request body"),
+			)
+		}
+	}
+
+	time.Sleep(time.Second * 2)
+
+	msg := fmt.Sprintf("Charged %d %s", paymentBody.Amount, paymentBody.Currency)
+
+	p.cache[key] = types.CachedResponse{
+		StatusCode: 201,
+		Body: msg,
+	}
+}
