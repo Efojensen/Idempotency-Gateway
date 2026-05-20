@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/Efojensen/Idempotency-Gateway/middleware"
 	"github.com/Efojensen/Idempotency-Gateway/types"
@@ -9,6 +10,7 @@ import (
 
 type PaymentHandler struct {
 	cache map[string]types.CachedResponse
+	mu    sync.Mutex
 }
 
 func NewPaymentHandler(cache map[string]types.CachedResponse) *PaymentHandler {
@@ -17,6 +19,6 @@ func NewPaymentHandler(cache map[string]types.CachedResponse) *PaymentHandler {
 	}
 }
 
-func (p *PaymentHandler) RegisterPaymentRoutes (h *http.ServeMux) {
+func (p *PaymentHandler) RegisterPaymentRoutes(h *http.ServeMux) {
 	h.HandleFunc("/process-payment", middleware.CheckIdempotencyKey(p.payment))
 }
