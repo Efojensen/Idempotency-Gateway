@@ -5,7 +5,8 @@ import (
 )
 
 func main() {
-	apiServer := api.NewApiServer(":8080", nil)
+	store := make(map[string]string)
+	apiServer := api.NewApiServer(":8080", &store)
 
 	apiServer.Run()
 }

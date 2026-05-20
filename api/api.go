@@ -1,17 +1,16 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 )
 
 type ApiServer struct {
 	Port string
-	Db *sql.DB
+	Db *map[string]string
 }
 
-func NewApiServer(port string, db *sql.DB) *ApiServer {
+func NewApiServer(port string, db *map[string]string) *ApiServer {
 	return &ApiServer{
 		Port: port,
 		Db: db,
