@@ -12,7 +12,13 @@ import (
 )
 
 type PaymentHandler struct {
-	idem_key string
+	cache map[string]types.CachedResponse
+}
+
+func NewPaymentHandler(cache map[string]types.CachedResponse) *PaymentHandler {
+	return &PaymentHandler{
+		cache: cache,
+	}
 }
 
 func (p *PaymentHandler) RegisterPaymentRoutes (h *http.ServeMux) {
@@ -30,6 +36,14 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 	if paymentBody.Amount == 0 || paymentBody.Currency == "" {
 		utils.WriteErrorResponse(w, http.StatusBadRequest, errors.New("missing amount or currency"))
 		return
+	}
+
+	key := r.Context().Value("idempotencyKey").(string)
+
+	_, exists := p.cache[key]
+
+	if !exists {
+		
 	}
 
 	time.Sleep(time.Second * 2)

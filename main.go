@@ -7,7 +7,7 @@ import (
 
 func main() {
 	store := make(map[string]types.CachedResponse)
-	apiServer := api.NewApiServer(":8080", &store)
+	apiServer := api.NewApiServer(":8080", store)
 
 	apiServer.Run()
 }
