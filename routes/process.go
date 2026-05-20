@@ -36,6 +36,7 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 			utils.WriteErrorResponse(w, http.StatusUnprocessableEntity,
 				errors.New("idempotency key already used for a different request body"),
 			)
+			return
 		}
 	}
 
@@ -45,6 +46,9 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 
 	p.cache[key] = types.CachedResponse{
 		StatusCode: 201,
-		Body: msg,
+		Body:       msg,
+		PaymentRequest: paymentBody,
 	}
+
+	utils.WriteResponse(w, http.StatusCreated, msg)
 }
