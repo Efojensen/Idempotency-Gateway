@@ -3,14 +3,16 @@ package api
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/Efojensen/Idempotency-Gateway/types"
 )
 
 type ApiServer struct {
 	Port string
-	Db *map[string]string
+	Db *map[string]types.CachedResponse
 }
 
-func NewApiServer(port string, db *map[string]string) *ApiServer {
+func NewApiServer(port string, db *map[string]types.CachedResponse) *ApiServer {
 	return &ApiServer{
 		Port: port,
 		Db: db,

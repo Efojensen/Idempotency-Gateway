@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
+	"github.com/Efojensen/Idempotency-Gateway/middleware"
 	"github.com/Efojensen/Idempotency-Gateway/types"
 	"github.com/Efojensen/Idempotency-Gateway/utils"
 )
@@ -14,7 +16,7 @@ type PaymentHandler struct {
 }
 
 func (p *PaymentHandler) RegisterPaymentRoutes (h *http.ServeMux) {
-	h.HandleFunc("/process-payment", p.payment)
+	h.HandleFunc("/process-payment", middleware.CheckIdempotencyKey(p.payment))
 }
 
 func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
@@ -29,4 +31,6 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 		utils.WriteErrorResponse(w, http.StatusBadRequest, errors.New("missing amount or currency"))
 		return
 	}
+
+	time.Sleep(time.Second * 2)
 }
