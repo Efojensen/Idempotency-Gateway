@@ -31,7 +31,7 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 	if exists {
 		if cachedResponse.Currency == paymentBody.Currency && cachedResponse.Amount == paymentBody.Amount {
 			w.Header().Set("X-Cache-Hit", "true")
-			utils.WriteResponse(w, p.cache[key].StatusCode, p.cache[key])
+			utils.WriteResponse(w, p.cache[key].StatusCode, p.cache[key].Body)
 			return
 		} else {
 			utils.WriteErrorResponse(w, http.StatusUnprocessableEntity,
