@@ -30,8 +30,8 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 	cachedResponse, exists := p.cache[key]
 
 	if exists {
+		p.mu.Unlock()
 		if cachedResponse.Currency == paymentBody.Currency && cachedResponse.Amount == paymentBody.Amount {
-			p.mu.Unlock()
 			w.Header().Set("X-Cache-Hit", "true")
 			utils.WriteResponse(w, p.cache[key].StatusCode, p.cache[key].Body)
 			return
@@ -48,8 +48,8 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 	msg := fmt.Sprintf("Charged %d %s", paymentBody.Amount, paymentBody.Currency)
 
 	p.cache[key] = types.CachedResponse{
-		StatusCode: 201,
-		Body:       msg,
+		StatusCode:     201,
+		Body:           msg,
 		PaymentRequest: paymentBody,
 	}
 	p.mu.Unlock()

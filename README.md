@@ -134,8 +134,8 @@ curl -X POST http://localhost:8080/process-payment \
 ### In-Memory Idempotency Store
 
 - Used a Go `map[string]types.CachedResponse` as the idempotency cache for simplicity.
-- This is sufficient for a demo project and keeps the architecture lightweight.
-- Note: the cache is not persistent, so stored responses are lost when the server restarts.
+- This was because this is a demo project and keeps the project lightweight.
+- Note: the cache is not persistent, so the stored responses are lost when the server restarts.
 
 ### Middleware for Idempotency Key Validation
 
@@ -175,3 +175,16 @@ curl -X POST http://localhost:8080/process-payment \
 - Created `API.md` for endpoint details and request/response examples.
 - Created `SETUP.md` for repository setup instructions.
 - Created `design.md` for design rationale and architecture choices.
+
+## 5. The Developers Choice
+
+- Go will always thrive to be concurrent hence when two or more requests arrive
+at the same time, a goroutine will be spawned to handle that request concurrently and
+if the server or machine has multiple cores, it will be run in parallel.
+- However, this feature could pose a problem due to the use of the map data structure
+in golang. The map data structure returns data in an unordered way and due to multiple
+go routines trying to access and modify the same structure, we could be dealing with race
+conditions and hence incorrect and inconsistent data.
+- This was why mutexes were used to ensure that only one goroutine can access the data
+structure once at a time.
+- This also achieved the "blocking" effect of a request when two or more arrive at relatively the same time.
