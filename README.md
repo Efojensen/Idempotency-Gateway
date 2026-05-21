@@ -188,3 +188,5 @@ conditions and hence incorrect and inconsistent data.
 - This was why mutexes were used to ensure that only one goroutine can access the data
 structure once at a time.
 - This also achieved the "blocking" effect of a request when two or more arrive at relatively the same time.
+- For my developer's choice I have implemented a logging feature to log all successful
+requests

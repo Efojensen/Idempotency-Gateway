@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/Efojensen/Idempotency-Gateway/logging"
 	"github.com/Efojensen/Idempotency-Gateway/types"
 	"github.com/Efojensen/Idempotency-Gateway/utils"
 )
@@ -53,6 +55,12 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 		PaymentRequest: paymentBody,
 	}
 	p.mu.Unlock()
+
+	err := logging.WriteLogToFile(msg, key)
+
+	if err != nil {
+		log.Println(err.Error())
+	}
 
 	utils.WriteResponse(w, http.StatusCreated, msg)
 }
