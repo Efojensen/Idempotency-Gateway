@@ -38,9 +38,11 @@ func (p *PaymentHandler) payment(w http.ResponseWriter, r *http.Request) {
 			utils.WriteResponse(w, p.cache[key].StatusCode, p.cache[key].Body)
 			return
 		} else {
+			attackMsg := "WARN duplicate transaction request rejected: idempotency key already exists | idempotency_key="
 			utils.WriteErrorResponse(w, http.StatusUnprocessableEntity,
-				errors.New("idempotency key already used for a different request body"),
+				errors.New("Idempotency key already used for a different request body"),
 			)
+			logging.WriteAttackLogToFile(attackMsg, key)
 			return
 		}
 	}

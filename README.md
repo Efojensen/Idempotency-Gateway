@@ -189,4 +189,6 @@ conditions and hence incorrect and inconsistent data.
 structure once at a time.
 - This also achieved the "blocking" effect of a request when two or more arrive at relatively the same time.
 - For my developer's choice I have implemented a logging feature to log all successful
-requests
+requests. I also created an attacks log to log all transactions that trigger a 422 status
+- I believe this feature is essential in production so that we can track where and when a
+transaction caused a particular action to occur.
