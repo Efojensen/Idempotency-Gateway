@@ -141,24 +141,21 @@ curl -X POST http://localhost:8080/process-payment \
 
 - Implemented `middleware.CheckIdempotencyKey` to enforce the presence of `Idempotency-Key` in the request header.
 - The middleware stores the header value in the request context for downstream handlers.
-- This separates validation from payment logic and keeps route handlers focused on core behavior.
+- This choice separates validation from payment logic and keeps route handlers focused on core behavior.
 
 ### Single Endpoint Design
 
 - The API exposes a single endpoint: `POST /process-payment`.
-- This keeps the interface minimal and aligned with the core idempotent payment flow.
 
 ### Payload Validation
 
 - The payment handler validates required fields in the JSON body (`amount` and `currency`).
 - Invalid JSON or missing fields produce `400 Bad Request` errors.
-- This ensures only valid payment requests reach the idempotency logic.
 
 ### Idempotency Logic
 
 - If a request arrives with an existing key and identical payload, then the cached response is returned.
 - If the payload differs, the service returns `422 Unprocessable Entity` to indicate key reuse conflict.
-- This enforces the core idempotent contract: same key, same operation only.
 
 ### Mutex Protection
 
@@ -167,14 +164,8 @@ curl -X POST http://localhost:8080/process-payment \
 
 ### Simulated Processing Delay
 
-- A 2-second delay is intentionally included on the first request to simulate payment processing.
+- A 2-second delay is used to simulate payment processing on the first request.
 - This makes idempotency behavior easier to observe in replay scenarios.
-
-### Simple API Documentation Separation
-
-- Created `API.md` for endpoint details and request/response examples.
-- Created `SETUP.md` for repository setup instructions.
-- Created `design.md` for design rationale and architecture choices.
 
 ## 5. The Developers Choice
 
